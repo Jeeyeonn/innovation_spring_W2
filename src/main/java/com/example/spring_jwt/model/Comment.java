@@ -1,5 +1,6 @@
 package com.example.spring_jwt.model;
 
+import com.example.spring_jwt.Dto.CommentRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,7 +24,18 @@ public class Comment extends Timestamped{
     private String name;
 
     @Column(nullable = false)
-    private String content;
+    private String comment;
+
+    public Comment(CommentRequestDto requestDto, String username){
+        this.post_id = requestDto.getPost_id();
+        this.name = username;
+        this.comment = requestDto.getComment();
+    }
+
+    public void update(CommentRequestDto requestDto){
+        this.post_id = requestDto.getPost_id();
+        this.comment = requestDto.getComment();
+    }
 
 
 }
