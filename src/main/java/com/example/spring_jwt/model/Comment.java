@@ -18,7 +18,7 @@ public class Comment extends Timestamped{
     private Long id;
 
     @Column(nullable = false)
-    private String post_id;
+    private int post_id;
 
     @Column(nullable = false) // 컬럼 값이고 반드시 값이 존재해야 함을 나타냅니다.
     private String name;

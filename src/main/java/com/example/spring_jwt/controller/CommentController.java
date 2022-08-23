@@ -31,7 +31,8 @@ public class CommentController {
     //해당 게시글 댓글 가져오기
     @GetMapping("/comment/{id}")
     public ResponseEntity<ResponseModel> getComment(@PathVariable Long id){
-        List<Comment> comments = commentService.getComment(id);
+        int intid = id.intValue();
+        List<Comment> comments = commentService.getComment(intid);
         ResponseModel responseModel = ResponseModel.builder()
                 .code(HttpStatus.OK.value())
                 .httpStatus(HttpStatus.OK)
@@ -88,7 +89,8 @@ public class CommentController {
                                                        @PathVariable Long id){
         String token = request.getHeader("Authorization");
         String username = jwtTokenProvider.getUserPk(token);
-        commentService.DeleteComment(id, username);
+        int intid = id.intValue();
+        commentService.DeleteComment(intid, username);
 
         ResponseModel responseModel = ResponseModel.builder()
                 .code(HttpStatus.OK.value())
