@@ -2,6 +2,8 @@
 
 [⛅ SPRING 숙련주차 개인과제 API 명세서](https://www.notion.so/ca222e7053114cc48444d58f3fabe5e0)
 
+<br><br>
+
 ## ⛅ 요구사항
 
 - 회원 가입 API
