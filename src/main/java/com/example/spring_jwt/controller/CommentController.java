@@ -46,6 +46,16 @@ public class CommentController {
     @PostMapping("/auth/comment")
     public ResponseEntity<ResponseModel> postComment(HttpServletRequest request, @RequestBody CommentRequestDto requestDto){
         String token = request.getHeader("Authorization");
+
+        if (token == null || !jwtTokenProvider.validateToken(token)){
+            ResponseModel responseModel = ResponseModel.builder()
+                    .code(HttpStatus.BAD_REQUEST.value())
+                    .httpStatus(HttpStatus.OK)
+                    .message("토큰값이 없거나 유효하지 않습니다.").build();
+
+            return new ResponseEntity<>(responseModel, responseModel.getHttpStatus());
+        }
+
         String username = jwtTokenProvider.getUserPk(token);
 
         Comment comment = new Comment(requestDto,username);
@@ -68,6 +78,15 @@ public class CommentController {
     public ResponseEntity<ResponseModel> putComment(HttpServletRequest request,
                                                     @RequestBody CommentRequestDto requestDto, @PathVariable Long id){
         String token = request.getHeader("Authorization");
+        if (token == null || !jwtTokenProvider.validateToken(token)){
+            ResponseModel responseModel = ResponseModel.builder()
+                    .code(HttpStatus.BAD_REQUEST.value())
+                    .httpStatus(HttpStatus.OK)
+                    .message("토큰값이 없거나 유효하지 않습니다.").build();
+
+            return new ResponseEntity<>(responseModel, responseModel.getHttpStatus());
+        }
+
         String username = jwtTokenProvider.getUserPk(token);
 
         Comment comment = commentService.upDateComment(id, requestDto, username);
@@ -88,6 +107,15 @@ public class CommentController {
     public ResponseEntity<ResponseModel> DeleteComment(HttpServletRequest request,
                                                        @PathVariable Long id){
         String token = request.getHeader("Authorization");
+        if (token == null || !jwtTokenProvider.validateToken(token)){
+            ResponseModel responseModel = ResponseModel.builder()
+                    .code(HttpStatus.BAD_REQUEST.value())
+                    .httpStatus(HttpStatus.OK)
+                    .message("토큰값이 없거나 유효하지 않습니다.").build();
+
+            return new ResponseEntity<>(responseModel, responseModel.getHttpStatus());
+        }
+
         String username = jwtTokenProvider.getUserPk(token);
         int intid = id.intValue();
         commentService.DeleteComment(intid, username);

@@ -5,33 +5,31 @@ import com.example.spring_jwt.Dto.RefreshTokenDto;
 import com.example.spring_jwt.Dto.SignupRequestDto;
 
 import com.example.spring_jwt.jwt.JwtTokenProvider;
+import com.example.spring_jwt.model.ResponseModel;
 import com.example.spring_jwt.model.Users;
 import com.example.spring_jwt.repository.RefreshTokenRepository;
 import com.example.spring_jwt.repository.UserRepository;
 import com.example.spring_jwt.service.AuthUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import java.util.Optional;
 
 @RequiredArgsConstructor
 @RestController
 public class AuthController {
-
-    @Autowired
-    private final PasswordEncoder passwordEncoder;
     @Autowired
     private final JwtTokenProvider jwtTokenProvider;
     @Autowired
-    private final UserRepository userRepository;
-    @Autowired
     private final AuthUserService authUserService;
 
-    @Autowired
-    private final RefreshTokenRepository refreshTokenRepository;
 
     // 회원가입
     @PostMapping("/join")
@@ -41,25 +39,20 @@ public class AuthController {
 
     // 로그인
     @PostMapping("/login")
-    public String login(@RequestBody LoginDto loginDto) {
-        String username = loginDto.getUsername();
-        String password = loginDto.getPassword();
-        Optional<Users> found = userRepository.findByUsername(username);
-        if (!found.isPresent()) {
-            throw new IllegalArgumentException("ID가 존재하지 않습니다.");
-        }
+    public ResponseEntity<ResponseModel> login(@RequestBody LoginDto loginDto, HttpServletResponse response) {
 
-        String u_password = found.get().getPassword();
-        if (!password.equals(u_password))
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        authUserService.login(loginDto.getUsername(), loginDto.getPassword());
 
-        String accressToken = jwtTokenProvider.createToken(username);
-        String refreshToken = jwtTokenProvider.createRefreshToken(username);
+        String accressToken = jwtTokenProvider.createToken(loginDto.getUsername());
+        String refreshToken = jwtTokenProvider.createRefreshToken(loginDto.getUsername());
 
-        refreshTokenRepository.save(new RefreshTokenDto(refreshToken));
+        authUserService.tokenPostHeader(accressToken, refreshToken, response);
 
-        return "Access Token : " + accressToken+ "\n"
-                + "Refresh Toke : "+ refreshToken;
+        ResponseModel responseModel = ResponseModel.builder()
+                .code(HttpStatus.OK.value())
+                .httpStatus(HttpStatus.OK)
+                .message("로그인 완료").build();
+        return new ResponseEntity<>(responseModel, responseModel.getHttpStatus());
     }
 
 

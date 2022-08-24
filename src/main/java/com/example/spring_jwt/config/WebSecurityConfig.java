@@ -69,7 +69,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         // h2-console 사용에 대한 허용 (CSRF, FrameOptions 무시)
         web
                 .ignoring()
-                .antMatchers("/h2-console/**", "/join", "/login");
+                .antMatchers("/h2-console/**", "/join", "/login", "/post/**","/comment/**");
     }
 
 

@@ -27,7 +27,7 @@ public class Users extends Timestamped implements UserDetails {
     @Column(length = 100, nullable = false, unique = true)
     private String username;
 
-    @Column(length = 30, nullable = false)
+    @Column(nullable = false)
     private String password;
 
 

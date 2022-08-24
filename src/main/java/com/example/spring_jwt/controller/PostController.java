@@ -55,14 +55,32 @@ public class PostController {
 
     }
 
-    @RequestMapping(value="/auth/post", method=RequestMethod.POST)
-    public Post postPost(@RequestBody PostRequestDto requestDto, HttpServletRequest request){
+    @PostMapping("/auth/post")
+    public ResponseEntity<ResponseModel> postPost(@RequestBody PostRequestDto requestDto, HttpServletRequest request){
 
         String token = request.getHeader("Authorization");
+        if (token == null || !jwtTokenProvider.validateToken(token)){
+            ResponseModel responseModel = ResponseModel.builder()
+                    .code(HttpStatus.BAD_REQUEST.value())
+                    .httpStatus(HttpStatus.OK)
+                    .message("토큰값이 없거나 유효하지 않습니다.").build();
+
+            return new ResponseEntity<>(responseModel, responseModel.getHttpStatus());
+        }
+
         String username = jwtTokenProvider.getUserPk(token);
         Post post = new Post(requestDto, username);
+        postRepository.save(post);
+        List<Post> pp= new ArrayList<>();
+        pp.add(post);
+        ResponseModel responseModel = ResponseModel.builder()
+                .code(HttpStatus.OK.value())
+                .httpStatus(HttpStatus.OK)
+                .message("게시글 생성 완료")
+                .data(new ArrayList<>(pp)).build();
 
-        return postRepository.save(post);
+        return new ResponseEntity<>(responseModel, responseModel.getHttpStatus());
+
 
     }
 
@@ -95,6 +113,15 @@ public class PostController {
         Post post = postService.getPostID(id);
         String user = post.getName();
         String token = request.getHeader("Authorization");
+        if (token == null || !jwtTokenProvider.validateToken(token)){
+            ResponseModel responseModel = ResponseModel.builder()
+                    .code(HttpStatus.BAD_REQUEST.value())
+                    .httpStatus(HttpStatus.OK)
+                    .message("토큰값이 없거나 유효하지 않습니다.").build();
+
+            return new ResponseEntity<>(responseModel, responseModel.getHttpStatus());
+        }
+
         String username = jwtTokenProvider.getUserPk(token);
 
         if (user.equals(username)) {
@@ -126,6 +153,15 @@ public class PostController {
         Post post = postService.getPostID(id);
         String user = post.getName();
         String token = request.getHeader("Authorization");
+        if (token == null || !jwtTokenProvider.validateToken(token)){
+            ResponseModel responseModel = ResponseModel.builder()
+                    .code(HttpStatus.BAD_REQUEST.value())
+                    .httpStatus(HttpStatus.OK)
+                    .message("토큰값이 없거나 유효하지 않습니다.").build();
+
+            return new ResponseEntity<>(responseModel, responseModel.getHttpStatus());
+        }
+
         String username = jwtTokenProvider.getUserPk(token);
 
         if (user.equals(username)) {
